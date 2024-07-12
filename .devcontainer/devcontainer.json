@@ -31,7 +31,12 @@
     	"vscode": {
         	"extensions": [
 				"Angular.ng-template",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"mhutchie.git-graph",
+				"Zignd.html-css-class-completion",
+				"esbenp.prettier-vscode",
+				"dbaeumer.vscode-eslint",
+				"stylelint.vscode-stylelint"
 			]
 		}
 	}

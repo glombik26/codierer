@@ -24,6 +24,7 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "yarn install",
+	"postCreateCommand": "npm install && npm run serve:local-devcontainer",
 
 	// Configure tool-specific properties.
 	// "customizations": {},

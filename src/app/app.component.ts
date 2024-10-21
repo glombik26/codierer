@@ -90,7 +90,7 @@ export class AppComponent {
         break;
     }
     return options.filter(option =>
-      option.description.toLowerCase().includes(filterValue)
+      option.code.toLowerCase().includes(filterValue)
     );
   }
 

@@ -1,4 +1,4 @@
-import {Component, computed, effect, ElementRef, signal, ViewChild} from '@angular/core';
+import {Component, computed, effect, ElementRef, QueryList, signal, ViewChild, ViewChildren} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {MatCardModule} from '@angular/material/card';
 import {FormControl, FormsModule, ReactiveFormsModule, ValueChangeEvent} from '@angular/forms';
@@ -57,6 +57,8 @@ export class AppComponent {
   filteredOptions2 = computed(() => this.filterOptions(this.inputOption2(), 2));
   filteredOptions3 = computed(() => this.filterOptions(this.inputOption3(), 3));
   filteredOptions4 = computed(() => this.filterOptions(this.inputOption4(), 4));
+
+  @ViewChildren('input1, input2, input3, input4') inputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   // Anzeige-Funktion für Autocomplete
   displayFn = (option: Komponente | null): string => {
@@ -276,5 +278,45 @@ export class AppComponent {
   // Methode zum Entfernen einer Komponentengruppe
   removeKomponente(index: number): void {
     this.komponenteGruppen.update(gruppen => gruppen.filter((_, i) => i !== index));
+  }
+
+  onKeydown(event: KeyboardEvent, inputNumber: number): void {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Verhindert das Standardverhalten (z.B. Formularabsenden)
+
+      // Überprüfen, ob bereits eine Option ausgewählt wurde
+      let selectedOption: Komponente | null = null;
+      switch (inputNumber) {
+        case 1:
+          selectedOption = this.userSelectedOption1();
+          break;
+        case 2:
+          selectedOption = this.userSelectedOption2();
+          break;
+        case 3:
+          selectedOption = this.userSelectedOption3();
+          break;
+        case 4:
+          selectedOption = this.userSelectedOption4();
+          break;
+        default:
+          break;
+      }
+
+      if (!selectedOption) {
+        const filteredOptions = this.getFilteredOptions(inputNumber);
+        if (filteredOptions.length > 0) {
+          const firstOption = filteredOptions[0];
+          this.setSelectedOption(firstOption, inputNumber);
+
+          // Fokus auf das nächste Eingabefeld setzen
+          const nextInputNumber = inputNumber + 1;
+          if (nextInputNumber <= 4) {
+            const nextInput = this.inputs.toArray()[nextInputNumber - 1].nativeElement;
+            nextInput.focus();
+          }
+        }
+      }
+    }
   }
 }

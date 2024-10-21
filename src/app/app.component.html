@@ -2,17 +2,18 @@
   <mat-card-content>
 
     <!-- Eingabefelder für die vier Komponenten -->
-    <div class="eingabefelder-container">
       <!-- Komponente 1 -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Komponente 1 auswählen</mat-label>
         <input
+          #input1
           type="text"
           matInput
           [matAutocomplete]="auto1"
           [value]="inputOption1()"
           (input)="onInputChange($event, 1)"
-          (blur)="onInputBlur(1)"
+          (blur)="onInputBlur(1)"          
+          (keydown)="onKeydown($event, 1)"
         />
       
         <button
@@ -44,12 +45,14 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Komponente 2 auswählen</mat-label>
           <input
+            #input2
             type="text"
             matInput
             [matAutocomplete]="auto2"
             [value]="inputOption2()"
             (input)="onInputChange($event, 2)"
             (blur)="onInputBlur(2)"
+            (keydown)="onKeydown($event, 2)"
           />
           
           <button
@@ -81,12 +84,14 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Komponente 3 auswählen</mat-label>
           <input
+            #input3
             type="text"
             matInput
             [matAutocomplete]="auto3"
             [value]="inputOption3()"
             (input)="onInputChange($event, 3)"
             (blur)="onInputBlur(3)"
+            (keydown)="onKeydown($event, 3)"
           />
           
           <button
@@ -119,12 +124,14 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Komponente 4 auswählen</mat-label>
         <input
+          #input4
           type="text"
           matInput
           [matAutocomplete]="auto4"
           [value]="inputOption4()"
           (input)="onInputChange($event, 4)"
           (blur)="onInputBlur(4)"
+          (keydown)="onKeydown($event, 4)"
         />
         
         <button
@@ -151,8 +158,6 @@
         </mat-autocomplete>
       </mat-form-field>
        }
-    </div>
-
     <!-- Hinzufügen-Button -->
     <button 
       mat-fab

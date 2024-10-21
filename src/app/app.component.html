@@ -1,167 +1,182 @@
-<mat-card appearance="outlined" mat-elevation-z8>
+<mat-card appearance="outlined" class="full-width" mat-elevation-z8>
   <mat-card-content>
-    <mat-form-field appearance="outline">
-      <mat-label>Komponente auswählen</mat-label>
-      <input
-        type="text"
-        matInput
-        [matAutocomplete]="auto"
-        [value]="inputOption1()"
-        (input)="onInputChange($event)"
-        (blur)="onInputBlur()"
-        (click)="onInputClick()"
-      />
-    
-      <button
-        mat-icon-button
-        matSuffix
-        aria-label="Eingabe zurücksetzen"
-        (click)="onReset(); $event.stopPropagation()"
-      >
-        <mat-icon>clear</mat-icon>
-      </button>
-      <mat-autocomplete
-        #auto="matAutocomplete"
-        (optionSelected)="onOptionSelected($event)"
-        [displayWith]="displayFn"
-      >
-        @for(option of filteredOptions1(); track option) {
-          <mat-option          
+
+    <!-- Eingabefelder für die vier Komponenten -->
+    <div class="eingabefelder-container">
+      <!-- Komponente 1 -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Komponente 1 auswählen</mat-label>
+        <input
+          type="text"
+          matInput
+          [matAutocomplete]="auto1"
+          [value]="inputOption1()"
+          (input)="onInputChange($event, 1)"
+          (blur)="onInputBlur(1)"
+        />
+      
+        <button
+          mat-icon-button
+          matSuffix
+          aria-label="Eingabe zurücksetzen"
+          (click)="onReset(1); $event.stopPropagation()"
+        >
+          <mat-icon>clear</mat-icon>
+        </button>
+        
+        <mat-autocomplete
+          #auto1="matAutocomplete"
+          (optionSelected)="onOptionSelected($event, 1)"
+          [displayWith]="displayFn"
+        >
+          @for (option of filteredOptions1(); track option) {
+            <mat-option
+              [value]="option"
+            >
+              {{ option.code }} - {{ option.description }}
+            </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <!-- Komponente 2 -->
+       @if (inputOption1()) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Komponente 2 auswählen</mat-label>
+          <input
+            type="text"
+            matInput
+            [matAutocomplete]="auto2"
+            [value]="inputOption2()"
+            (input)="onInputChange($event, 2)"
+            (blur)="onInputBlur(2)"
+          />
+          
+          <button
+            mat-icon-button
+            matSuffix
+            aria-label="Eingabe zurücksetzen"
+            (click)="onReset(2); $event.stopPropagation()"
+          >
+            <mat-icon>clear</mat-icon>
+          </button>
+          
+          <mat-autocomplete
+            #auto2="matAutocomplete"
+            (optionSelected)="onOptionSelected($event, 2)"
+            [displayWith]="displayFn"
+          >
+          @for (option of filteredOptions2(); track option) {
+            <mat-option
+              [value]="option"
+            >
+              {{ option.code }} - {{ option.description }}
+            </mat-option>
+          }
+          </mat-autocomplete>
+        </mat-form-field>  
+       }
+      <!-- Komponente 3 -->
+       @if (inputOption1() && inputOption2()) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Komponente 3 auswählen</mat-label>
+          <input
+            type="text"
+            matInput
+            [matAutocomplete]="auto3"
+            [value]="inputOption3()"
+            (input)="onInputChange($event, 3)"
+            (blur)="onInputBlur(3)"
+          />
+          
+          <button
+            mat-icon-button
+            matSuffix
+            aria-label="Eingabe zurücksetzen"
+            (click)="onReset(3); $event.stopPropagation()"
+          >
+            <mat-icon>clear</mat-icon>
+          </button>
+          
+          <mat-autocomplete
+            #auto3="matAutocomplete"
+            (optionSelected)="onOptionSelected($event, 3)"
+            [displayWith]="displayFn"
+          >
+          @for (option of filteredOptions3(); track option) {
+            <mat-option
+              [value]="option"
+            >
+              {{ option.code }} - {{ option.description }}
+            </mat-option>
+          }
+          </mat-autocomplete>
+        </mat-form-field>
+       }
+
+      <!-- Komponente 4 -->
+       @if (inputOption1() && inputOption2() && inputOption3()) {        
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Komponente 4 auswählen</mat-label>
+        <input
+          type="text"
+          matInput
+          [matAutocomplete]="auto4"
+          [value]="inputOption4()"
+          (input)="onInputChange($event, 4)"
+          (blur)="onInputBlur(4)"
+        />
+        
+        <button
+          mat-icon-button
+          matSuffix
+          aria-label="Eingabe zurücksetzen"
+          (click)="onReset(4); $event.stopPropagation()"
+        >
+          <mat-icon>clear</mat-icon>
+        </button>
+        
+        <mat-autocomplete
+          #auto4="matAutocomplete"
+          (optionSelected)="onOptionSelected($event, 4)"
+          [displayWith]="displayFn"
+        >
+        @for (option of filteredOptions4(); track option) {
+          <mat-option
             [value]="option"
           >
             {{ option.code }} - {{ option.description }}
           </mat-option>
         }
-      </mat-autocomplete>
-    </mat-form-field>
-
-    @if(inputOption1()) {
-      <mat-form-field appearance="outline">
-        <mat-label>Komponente auswählen</mat-label>
-        <input
-          type="text"
-          matInput
-          [matAutocomplete]="auto"
-          [value]="inputOption2()"
-          (input)="onInputChange2($event)"
-          (blur)="onInputBlur2()"
-          (click)="onInputClick2()"
-        />
-        
-        <button
-          mat-icon-button
-          matSuffix
-          aria-label="Eingabe zurücksetzen"
-          (click)="onReset2(); $event.stopPropagation()"
-        >
-          <mat-icon>clear</mat-icon>
-        </button>
-        <mat-autocomplete
-          #auto="matAutocomplete"
-          (optionSelected)="onOptionSelected2($event)"
-          [displayWith]="displayFn"
-        >
-          @for(option of filteredOptions2(); track option) {
-            <mat-option          
-              [value]="option"
-            >
-              {{ option.code }} - {{ option.description }}
-            </mat-option>
-          }
         </mat-autocomplete>
       </mat-form-field>
-    }
-    @if(inputOption1() && inputOption2()) {
-      <mat-form-field appearance="outline">
-        <mat-label>Komponente auswählen</mat-label>
-        <input
-          type="text"
-          matInput
-          [matAutocomplete]="auto"
-          [value]="inputOption3()"
-          (input)="onInputChange3($event)"
-          (blur)="onInputBlur3()"
-          (click)="onInputClick3()"
-        />
-        
-        <button
-          mat-icon-button
-          matSuffix
-          aria-label="Eingabe zurücksetzen"
-          (click)="onReset3(); $event.stopPropagation()"
-        >
-          <mat-icon>clear</mat-icon>
-        </button>
-        <mat-autocomplete
-          #auto="matAutocomplete"
-          (optionSelected)="onOptionSelected3($event)"
-          [displayWith]="displayFn"
-        >
-          @for(option of filteredOptions3(); track option) {
-            <mat-option          
-              [value]="option"
-            >
-              {{ option.code }} - {{ option.description }}
-            </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
-    }
+       }
+    </div>
 
-    @if (inputOption1() && inputOption2() && inputOption3()) {
-      <mat-form-field appearance="outline">
-        <mat-label>Komponente auswählen</mat-label>
-        <input
-          type="text"
-          matInput
-          [matAutocomplete]="auto"
-          [value]="inputOption4()"
-          (input)="onInputChange4($event)"
-          (blur)="onInputBlur4()"
-          (click)="onInputClick4()"
-        />
-        
-        <button
-          mat-icon-button
-          matSuffix
-          aria-label="Eingabe zurücksetzen"
-          (click)="onReset4(); $event.stopPropagation()"
-        >
-          <mat-icon>clear</mat-icon>
-        </button>
-        <mat-autocomplete
-          #auto="matAutocomplete"
-          (optionSelected)="onOptionSelected4($event)"
-          [displayWith]="displayFn"
-        >
-          @for(option of filteredOptions4(); track option) {
-            <mat-option          
-              [value]="option"
-            >
-              {{ option.code }} - {{ option.description }}
-            </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
-    }
-
+    <!-- Hinzufügen-Button -->
     <button 
       mat-fab
+      color="primary"
+      aria-label="Komponenten hinzufügen"
       (click)="addKomponente()"
+      class="add-button"
+      [disabled]="!canAddKomponente()"
     >
       <mat-icon>add</mat-icon>
     </button>
-  </mat-card-content>
-</mat-card>
-<mat-card>
-  <mat-card-content>
-    <mat-list>
-      @for (eintrag of komponenteGruppen(); track eintrag) {
-        <mat-list-item>
-          <p>{{ eintrag }}</p>
-        </mat-list-item>
-      }
-      
-    </mat-list>
+
+    @if (komponenteGruppen().length > 0) {
+      <!-- Liste der hinzugefügten Komponentengruppen -->
+      <div class="komponenten-liste">
+        <h3>Hinzugefügte Komponentengruppen</h3>
+        <mat-list>
+          @for (gruppe of komponenteGruppen(); track gruppe) {
+            <mat-list-item>
+            <p>{{ gruppe }}</p>
+          </mat-list-item>
+          }          
+        </mat-list>
+      </div>
+    }
   </mat-card-content>
 </mat-card>

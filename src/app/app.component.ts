@@ -32,272 +32,249 @@ import { OPTION1_101_ROHR, OPTIONS_1, OPTIONS_2, OPTIONS_3_101, OPTIONS_3_111_12
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'codierer';
-  // Liste der hinzugefügten Komponentengruppen
-  komponenteGruppen = signal<string[]>([]);
 
+  // Signale für die vier Eingabefelder
   inputOption1 = signal<string>('');
-  userSelectedOption1 = signal<Komponente | null>(null);  
-  isResetting1 = signal<boolean>(false); // Neue Signal-Variable
-  selectedOption1 = computed(() => {
-    return this.userSelectedOption1() || null;
-  });
-  filteredOptions1 = computed(() => {
-    const value = this.inputOption1().toLowerCase();
-    return OPTIONS_1.filter(option =>
-      option.code.toLowerCase().includes(value)
-    );
-  });
+  userSelectedOption1 = signal<Komponente | null>(null);
 
   inputOption2 = signal<string>('');
   userSelectedOption2 = signal<Komponente | null>(null);
-  isResetting2 = signal<boolean>(false); // Neue Signal-Variable
-  selectedOption2 = computed(() => {
-    return this.userSelectedOption1() || null;
-  });
-  filteredOptions2 = computed(() => {
-    const value = this.inputOption2().toLowerCase();
-    return OPTIONS_2.filter(option =>
-      option.code.toLowerCase().includes(value)
-    );
-  });
 
   inputOption3 = signal<string>('');
   userSelectedOption3 = signal<Komponente | null>(null);
-  isResetting3 = signal<boolean>(false); // Neue Signal-Variable
-  selectedOption3 = computed(() => {
-    return this.userSelectedOption1() || null;
-  });
-  filteredOptions3 = computed(() => {
-    const value = this.inputOption3().toLowerCase();
-    if(this.inputOption1().toLowerCase().startsWith('101')) {
-      return OPTIONS_3_101.filter(option =>
-        option.code.toLowerCase().includes(value)
-      );
-    }
-    return OPTIONS_3_111_121.filter(option =>
-      option.code.toLowerCase().includes(value)
-    );
-  });
 
   inputOption4 = signal<string>('');
   userSelectedOption4 = signal<Komponente | null>(null);
-  isResetting4 = signal<boolean>(false); // Neue Signal-Variable
-  selectedOption4 = computed(() => {
-    return this.userSelectedOption1() || null;
-  });
-  filteredOptions4 = computed(() => {
-    const value = this.inputOption4().toLowerCase();
-    if(this.inputOption1().toLowerCase().startsWith('101')) {
-      return OPTIONS_4_101.filter(option =>
-        option.code.toLowerCase().includes(value)
-      );
-    }
-    return OPTIONS_4_111_121.filter(option =>
-      option.code.toLowerCase().includes(value)
-    );
-  });
 
+  // Liste der hinzugefügten Komponentengruppen
+  komponenteGruppen = signal<string[]>([]);
+
+  // Flag zur Verhinderung von unerwünschten Automatischen Updates
+  isResetting = signal<boolean>(false);
+
+  // Computed Signale für die gefilterten Optionen
+  filteredOptions1 = computed(() => this.filterOptions(this.inputOption1(), 1));
+  filteredOptions2 = computed(() => this.filterOptions(this.inputOption2(), 2));
+  filteredOptions3 = computed(() => this.filterOptions(this.inputOption3(), 3));
+  filteredOptions4 = computed(() => this.filterOptions(this.inputOption4(), 4));
+
+  // Anzeige-Funktion für Autocomplete
   displayFn = (option: Komponente | null): string => {
-    return option && option.description ? option.code + ' - ' + option.description : '';
+    return option ? option.description : '';
   };
 
-  onInputChange(event: Event): void {
+  // Allgemeine Filterfunktion
+  private filterOptions(value: string, index: number): Komponente[] {
+    const filterValue = value.toLowerCase();
+    let options: Komponente[] = [];
+    switch (index) {
+      case 1:
+        options = OPTIONS_1;
+        break;
+      case 2:
+        options = OPTIONS_2;
+        break;
+      case 3:
+        if (this.inputOption1().startsWith('101')) {
+          options = OPTIONS_3_101;
+        } else {
+          options = OPTIONS_3_111_121;
+        }
+        break;
+      case 4:
+        if (this.inputOption1().startsWith('101')) {
+          options = OPTIONS_4_101;
+        } else {
+          options = OPTIONS_4_111_121;
+        }
+        break;
+    }
+    return options.filter(option =>
+      option.description.toLowerCase().includes(filterValue)
+    );
+  }
+
+  // Event-Handler für Eingabeänderungen
+  onInputChange(event: Event, inputNumber: number): void {
     const target = event.target as HTMLInputElement;
-    this.inputOption1.set(target.value);
-    this.userSelectedOption1.set(null); // Manuelle Auswahl zurücksetzen
+    switch (inputNumber) {
+      case 1:
+        this.inputOption1.set(target.value);
+        this.userSelectedOption1.set(null);
+        break;
+      case 2:
+        this.inputOption2.set(target.value);
+        this.userSelectedOption2.set(null);
+        break;
+      case 3:
+        this.inputOption3.set(target.value);
+        this.userSelectedOption3.set(null);
+        break;
+      case 4:
+        this.inputOption4.set(target.value);
+        this.userSelectedOption4.set(null);
+        break;
+      default:
+        break;
+    }
   }
 
-  onOptionSelected(event: { option: { value: Komponente } }): void {
+  // Event-Handler für das Verlassen des Eingabefeldes
+  onInputBlur(inputNumber: number): void {
+    if (this.isResetting()) {
+      return;
+    }
+
+    let selectedOption: Komponente | null = null;
+
+    switch (inputNumber) {
+      case 1:
+        selectedOption = this.userSelectedOption1();
+        break;
+      case 2:
+        selectedOption = this.userSelectedOption2();
+        break;
+      case 3:
+        selectedOption = this.userSelectedOption3();
+        break;
+      case 4:
+        selectedOption = this.userSelectedOption4();
+        break;
+      default:
+        break;
+    }
+
+    const filteredOptions = this.getFilteredOptions(inputNumber);
+
+    if (!selectedOption && filteredOptions.length > 0) {
+      const firstOption = filteredOptions[0];
+      this.setSelectedOption(firstOption, inputNumber);
+    }
+  }
+
+  // Hilfsfunktion, um die gefilterten Optionen basierend auf der Eingabennummer zu erhalten
+  private getFilteredOptions(inputNumber: number): Komponente[] {
+    switch (inputNumber) {
+      case 1:
+        return this.filteredOptions1();
+      case 2:
+        return this.filteredOptions2();
+      case 3:
+        return this.filteredOptions3();
+      case 4:
+        return this.filteredOptions4();
+      default:
+        return [];
+    }
+  }
+
+  // Hilfsfunktion, um die ausgewählte Option zu setzen
+  private setSelectedOption(option: Komponente, inputNumber: number): void {
+    switch (inputNumber) {
+      case 1:
+        this.userSelectedOption1.set(option);
+        this.inputOption1.set(option.code + ' - ' + option.description);
+        break;
+      case 2:
+        this.userSelectedOption2.set(option);
+        this.inputOption2.set(option.code + ' - ' + option.description);
+        break;
+      case 3:
+        this.userSelectedOption3.set(option);
+        this.inputOption3.set(option.code + ' - ' + option.description);
+        break;
+      case 4:
+        this.userSelectedOption4.set(option);
+        this.inputOption4.set(option.code + ' - ' + option.description);
+        break;
+      default:
+        break;
+    }
+  }
+
+  // Event-Handler für die Auswahl einer Option aus dem Autocomplete
+  onOptionSelected(event: { option: { value: Komponente } }, inputNumber: number): void {
     const selected = event.option.value;
-    this.userSelectedOption1.set(selected);
-    this.inputOption1.set(selected.code + ' - ' + selected.description);
+    this.setSelectedOption(selected, inputNumber);
   }
 
-  onInputBlur(): void {
-    const options = this.filteredOptions1();
-    if (options.length > 0) {
-      const firstOption = options[0];
-      this.userSelectedOption1.set(firstOption);
-      this.inputOption1.set(firstOption.code + ' - ' + firstOption.description);
-    } else {
-      // Optional: Eingabefeld leeren, wenn keine Optionen verfügbar sind
-      this.userSelectedOption1.set(null);
+  // Methode zum Zurücksetzen eines Eingabefeldes
+  onReset(inputNumber: number): void {
+    this.isResetting.set(true);
+    switch (inputNumber) {
+      case 1:
+        this.inputOption1.set('');
+        this.userSelectedOption1.set(null);
+        break;
+      case 2:
+        this.inputOption2.set('');
+        this.userSelectedOption2.set(null);
+        break;
+      case 3:
+        this.inputOption3.set('');
+        this.userSelectedOption3.set(null);
+        break;
+      case 4:
+        this.inputOption4.set('');
+        this.userSelectedOption4.set(null);
+        break;
+      default:
+        break;
+    }
+
+    // Flag zurücksetzen nach dem aktuellen Call Stack
+    setTimeout(() => {
+      this.isResetting.set(false);
+    }, 0);
+  }
+
+  // Methode zum Hinzufügen einer Komponentengruppe zur Liste
+  addKomponente(): void {
+    // Überprüfen, ob alle vier Komponenten ausgewählt sind
+    if (
+      this.userSelectedOption1() &&
+      this.userSelectedOption2() &&
+      this.userSelectedOption3() &&
+      this.userSelectedOption4()
+    ) {
+
+      // Hinzufügen der Gruppe zur Liste mit `update`
+      this.komponenteGruppen.update(gruppen => [...gruppen, this.userSelectedOption1()?.code + '.' + this.userSelectedOption2()?.code + '.' + this.userSelectedOption3()?.code + '.' + this.userSelectedOption4()?.code]);
+
+      // Eingabefelder zurücksetzen
       this.inputOption1.set('');
-    }
-  }
-
-  onInputClick(): void {
-    this.inputOption1.set('');
-    this.userSelectedOption1.set(null);
-  }
-
-  onReset(): void {
-    this.isResetting1.set(true); // Flag setzen
-    this.inputOption1.set('');
-    this.userSelectedOption1.set(null);
-
-    // Nach einer kurzen Verzögerung das Flag zurücksetzen
-    setTimeout(() => {
-      this.isResetting1.set(false);
-    }, 0); // 0 ms Verzögerung, um nach dem aktuellen Call Stack zu setzen
-  }
-
-  onInputChange2(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.inputOption2.set(target.value);
-    this.userSelectedOption2.set(null); // Manuelle Auswahl zurücksetzen
-  }
-
-  onOptionSelected2(event: { option: { value: Komponente } }): void {
-    const selected = event.option.value;
-    this.userSelectedOption2.set(selected);
-    this.inputOption2.set(selected.code + ' - ' + selected.description);
-  }
-
-  onInputBlur2(): void {
-    const options = this.filteredOptions2();
-    if (options.length > 0) {
-      const firstOption = options[0];
-      this.userSelectedOption2.set(firstOption);
-      this.inputOption2.set(firstOption.code + ' - ' + firstOption.description);
-    } else {
-      // Optional: Eingabefeld leeren, wenn keine Optionen verfügbar sind
-      this.userSelectedOption2.set(null);
+      this.userSelectedOption1.set(null);
       this.inputOption2.set('');
-    }
-  }
-
-  onInputClick2(): void {
-    this.inputOption2.set('');
-    this.userSelectedOption2.set(null);
-  }
-
-  onReset2(): void {
-    this.isResetting2.set(true); // Flag setzen
-    this.inputOption2.set('');
-    this.userSelectedOption2.set(null);
-
-    // Nach einer kurzen Verzögerung das Flag zurücksetzen
-    setTimeout(() => {
-      this.isResetting2.set(false);
-    }, 0); // 0 ms Verzögerung, um nach dem aktuellen Call Stack zu setzen
-  }
-
-  onInputChange3(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.inputOption3.set(target.value);
-    this.userSelectedOption3.set(null); // Manuelle Auswahl zurücksetzen
-  }
-
-  onOptionSelected3(event: { option: { value: Komponente } }): void {
-    const selected = event.option.value;
-    this.userSelectedOption3.set(selected);
-    this.inputOption3.set(selected.code + ' - ' + selected.description);
-  }
-
-  onInputBlur3(): void {
-    const options = this.filteredOptions3();
-    if (options.length > 0) {
-      const firstOption = options[0];
-      this.userSelectedOption3.set(firstOption);
-      this.inputOption3.set(firstOption.code + ' - ' + firstOption.description);
-    } else {
-      // Optional: Eingabefeld leeren, wenn keine Optionen verfügbar sind
-      this.userSelectedOption3.set(null);
+      this.userSelectedOption2.set(null);
       this.inputOption3.set('');
-    }
-  }
-
-  onInputClick3(): void {
-    this.inputOption3.set('');
-    this.userSelectedOption3.set(null);
-  }
-
-  onReset3(): void {
-    this.isResetting3.set(true); // Flag setzen
-    this.inputOption3.set('');
-    this.userSelectedOption3.set(null);
-
-    // Nach einer kurzen Verzögerung das Flag zurücksetzen
-    setTimeout(() => {
-      this.isResetting3.set(false);
-    }, 0); // 0 ms Verzögerung, um nach dem aktuellen Call Stack zu setzen
-  }
-
-  onInputChange4(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.inputOption4.set(target.value);
-    this.userSelectedOption4.set(null); // Manuelle Auswahl zurücksetzen
-  }
-
-  onOptionSelected4(event: { option: { value: Komponente } }): void {
-    const selected = event.option.value;
-    this.userSelectedOption4.set(selected);
-    this.inputOption4.set(selected.code + ' - ' + selected.description);
-  }
-
-  onInputBlur4(): void {
-    const options = this.filteredOptions4();
-    if (options.length > 0) {
-      const firstOption = options[0];
-      this.userSelectedOption4.set(firstOption);
-      this.inputOption4.set(firstOption.code + ' - ' + firstOption.description);
-    } else {
-      // Optional: Eingabefeld leeren, wenn keine Optionen verfügbar sind
-      this.userSelectedOption4.set(null);
+      this.userSelectedOption3.set(null);
       this.inputOption4.set('');
+      this.userSelectedOption4.set(null);
     }
   }
 
-  onInputClick4(): void {
-    this.inputOption4.set('');
-    this.userSelectedOption4.set(null);
+  // trackBy Funktion für *ngFor bei den Autocomplete-Optionen
+  trackByCode(index: number, option: Komponente): string {
+    return option.code;
   }
 
-  onReset4(): void {
-    this.isResetting4.set(true); // Flag setzen
-    this.inputOption4.set('');
-    this.userSelectedOption4.set(null);
-
-    // Nach einer kurzen Verzögerung das Flag zurücksetzen
-    setTimeout(() => {
-      this.isResetting4.set(false);
-    }, 0); // 0 ms Verzögerung, um nach dem aktuellen Call Stack zu setzen
+  // trackBy Funktion für *ngFor bei der Liste der Komponentengruppen
+  trackByIndex(index: number, gruppe: string): number {
+    return index;
   }
 
-  addKomponente(): void {    
-
-    this.komponenteGruppen.update(gruppen => [...gruppen, this.userSelectedOption1()?.code + '.' + this.userSelectedOption2()?.code + '.' + this.userSelectedOption3()?.code + '.' + this.userSelectedOption4()?.code]);
-
-    // Eingabefelder zurücksetzen
-    this.inputOption1.set('');
-    this.userSelectedOption1.set(null);
-    this.inputOption2.set('');
-    this.userSelectedOption2.set(null);
-    this.inputOption3.set('');
-    this.userSelectedOption3.set(null);
-    this.inputOption4.set('');
-    this.userSelectedOption4.set(null);
+  // Methode, um zu überprüfen, ob alle vier Komponenten ausgewählt sind
+  canAddKomponente(): boolean {
+    return (
+      !!this.userSelectedOption1() &&
+      !!this.userSelectedOption2() &&
+      !!this.userSelectedOption3() &&
+      !!this.userSelectedOption4()
+    );
   }
-  /*
-  options2 = computed(() => { if(this.selectedOption1()) return OPTIONS_2; return undefined;});
-  option2 = signal<Komponente | undefined>(undefined);
-  options3 = computed(() => {
-    if(this.selectedOption1()) {
-      if (this.selectedOption1() === OPTION1_101_ROHR) return OPTIONS_3_101;
-      return OPTIONS_3_111_121;
-    }
-    return undefined;
-  });
-  option3 = signal<Komponente | undefined>(undefined);
-  options4 = computed(() => {
-    if(this.selectedOption1()) {
-      if (this.selectedOption1() === OPTION1_101_ROHR) return OPTIONS_4_101;
-      return OPTIONS_4_111_121;
-    }
-    return undefined;
-  });
-  option4 = signal<Komponente | undefined>(undefined);
-  */
+
+  // Methode zum Entfernen einer Komponentengruppe
+  removeKomponente(index: number): void {
+    this.komponenteGruppen.update(gruppen => gruppen.filter((_, i) => i !== index));
+  }
 }

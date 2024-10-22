@@ -1,163 +1,169 @@
+<!-- app.component.html -->
 <mat-card appearance="outlined" class="full-width" mat-elevation-z8>
   <mat-card-content>
 
     <!-- Eingabefelder für die vier Komponenten -->
-      <!-- Komponente 1 -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Komponente 1 auswählen</mat-label>
-        <input
-          #input1
-          type="text"
-          matInput
-          [matAutocomplete]="auto1"
-          [value]="inputOption1()"
-          (input)="onInputChange($event, 1)"
-          (blur)="onInputBlur(1)"          
-          (keydown)="onKeydown($event, 1)"
-        />
-      
-        <button
-          mat-icon-button
-          matSuffix
-          aria-label="Eingabe zurücksetzen"
-          (click)="onReset(1); $event.stopPropagation()"
-        >
-          <mat-icon>clear</mat-icon>
-        </button>
-        
-        <mat-autocomplete
-          #auto1="matAutocomplete"
-          (optionSelected)="onOptionSelected($event, 1)"
-          [displayWith]="displayFn"
-        >
-          @for (option of filteredOptions1(); track option) {
-            <mat-option
-              [value]="option"
-            >
-              {{ option.code }} - {{ option.description }}
-            </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
 
-      <!-- Komponente 2 -->
-       @if (inputOption1()) {
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Komponente 2 auswählen</mat-label>
-          <input
-            #input2
-            type="text"
-            matInput
-            [matAutocomplete]="auto2"
-            [value]="inputOption2()"
-            (input)="onInputChange($event, 2)"
-            (blur)="onInputBlur(2)"
-            (keydown)="onKeydown($event, 2)"
-          />
-          
-          <button
-            mat-icon-button
-            matSuffix
-            aria-label="Eingabe zurücksetzen"
-            (click)="onReset(2); $event.stopPropagation()"
-          >
-            <mat-icon>clear</mat-icon>
-          </button>
-          
-          <mat-autocomplete
-            #auto2="matAutocomplete"
-            (optionSelected)="onOptionSelected($event, 2)"
-            [displayWith]="displayFn"
-          >
-          @for (option of filteredOptions2(); track option) {
-            <mat-option
-              [value]="option"
-            >
-              {{ option.code }} - {{ option.description }}
-            </mat-option>
-          }
-          </mat-autocomplete>
-        </mat-form-field>  
-       }
-      <!-- Komponente 3 -->
-       @if (inputOption1() && inputOption2()) {
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Komponente 3 auswählen</mat-label>
-          <input
-            #input3
-            type="text"
-            matInput
-            [matAutocomplete]="auto3"
-            [value]="inputOption3()"
-            (input)="onInputChange($event, 3)"
-            (blur)="onInputBlur(3)"
-            (keydown)="onKeydown($event, 3)"
-          />
-          
-          <button
-            mat-icon-button
-            matSuffix
-            aria-label="Eingabe zurücksetzen"
-            (click)="onReset(3); $event.stopPropagation()"
-          >
-            <mat-icon>clear</mat-icon>
-          </button>
-          
-          <mat-autocomplete
-            #auto3="matAutocomplete"
-            (optionSelected)="onOptionSelected($event, 3)"
-            [displayWith]="displayFn"
-          >
-          @for (option of filteredOptions3(); track option) {
-            <mat-option
-              [value]="option"
-            >
-              {{ option.code }} - {{ option.description }}
-            </mat-option>
-          }
-          </mat-autocomplete>
-        </mat-form-field>
-       }
+    <!-- Komponente 1 -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Komponente 1 auswählen</mat-label>
+      <input
+        #input1
+        type="text"
+        matInput
+        [formControl]="inputOption1"
+        [matAutocomplete]="auto1"
+        (keydown)="onKeydown($event, 1)"
+      />
 
-      <!-- Komponente 4 -->
-       @if (inputOption1() && inputOption2() && inputOption3()) {        
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Komponente 4 auswählen</mat-label>
-        <input
-          #input4
-          type="text"
-          matInput
-          [matAutocomplete]="auto4"
-          [value]="inputOption4()"
-          (input)="onInputChange($event, 4)"
-          (blur)="onInputBlur(4)"
-          (keydown)="onKeydown($event, 4)"
-        />
-        
-        <button
-          mat-icon-button
-          matSuffix
-          aria-label="Eingabe zurücksetzen"
-          (click)="onReset(4); $event.stopPropagation()"
+      <button
+        mat-icon-button
+        matSuffix
+        aria-label="Eingabe zurücksetzen"
+        type="button"
+        (click)="onReset(1); $event.stopPropagation()"
+      >
+        <mat-icon>clear</mat-icon>
+      </button>
+
+      <mat-autocomplete
+        #auto1="matAutocomplete"
+        (optionSelected)="onOptionSelected($event, 1)"
+        [displayWith]="displayFn"
+        [autoActiveFirstOption]="true"
+      >
+        <mat-option
+          *ngFor="let option of filteredOptions1 | async; trackBy: trackByCode"
+          [value]="option"
         >
-          <mat-icon>clear</mat-icon>
-        </button>
-        
-        <mat-autocomplete
-          #auto4="matAutocomplete"
-          (optionSelected)="onOptionSelected($event, 4)"
-          [displayWith]="displayFn"
+          {{ option.code }} - {{ option.description }}
+        </mat-option>
+        <mat-option *ngIf="(filteredOptions1 | async)?.length === 0" disabled>
+          Keine Optionen verfügbar
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <!-- Komponente 2 -->
+    <mat-form-field appearance="outline" class="full-width" *ngIf="userSelectedOption1">
+      <mat-label>Komponente 2 auswählen</mat-label>
+      <input
+        #input2
+        type="text"
+        matInput
+        [formControl]="inputOption2"
+        [matAutocomplete]="auto2"
+        (keydown)="onKeydown($event, 2)"
+      />
+
+      <button
+        mat-icon-button
+        matSuffix
+        aria-label="Eingabe zurücksetzen"
+        type="button"
+        (click)="onReset(2); $event.stopPropagation()"
+      >
+        <mat-icon>clear</mat-icon>
+      </button>
+
+      <mat-autocomplete
+        #auto2="matAutocomplete"
+        (optionSelected)="onOptionSelected($event, 2)"
+        [displayWith]="displayFn"
+        [autoActiveFirstOption]="true"
+      >
+        <mat-option
+          *ngFor="let option of filteredOptions2 | async; trackBy: trackByCode"
+          [value]="option"
         >
-        @for (option of filteredOptions4(); track option) {
-          <mat-option
-            [value]="option"
-          >
-            {{ option.code }} - {{ option.description }}
-          </mat-option>
-        }
-        </mat-autocomplete>
-      </mat-form-field>
-       }
+          {{ option.code }} - {{ option.description }}
+        </mat-option>
+        <mat-option *ngIf="(filteredOptions2 | async)?.length === 0" disabled>
+          Keine Optionen verfügbar
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <!-- Komponente 3 -->
+    <mat-form-field appearance="outline" class="full-width" *ngIf="userSelectedOption1 && userSelectedOption2">
+      <mat-label>Komponente 3 auswählen</mat-label>
+      <input
+        #input3
+        type="text"
+        matInput
+        [formControl]="inputOption3"
+        [matAutocomplete]="auto3"
+        (keydown)="onKeydown($event, 3)"
+      />
+
+      <button
+        mat-icon-button
+        matSuffix
+        aria-label="Eingabe zurücksetzen"
+        type="button"
+        (click)="onReset(3); $event.stopPropagation()"
+      >
+        <mat-icon>clear</mat-icon>
+      </button>
+
+      <mat-autocomplete
+        #auto3="matAutocomplete"
+        (optionSelected)="onOptionSelected($event, 3)"
+        [displayWith]="displayFn"
+        [autoActiveFirstOption]="true"
+      >
+        <mat-option
+          *ngFor="let option of filteredOptions3 | async; trackBy: trackByCode"
+          [value]="option"
+        >
+          {{ option.code }} - {{ option.description }}
+        </mat-option>
+        <mat-option *ngIf="(filteredOptions3 | async)?.length === 0" disabled>
+          Keine Optionen verfügbar
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <!-- Komponente 4 -->
+    <mat-form-field appearance="outline" class="full-width" *ngIf="userSelectedOption1 && userSelectedOption2 && userSelectedOption3">
+      <mat-label>Komponente 4 auswählen</mat-label>
+      <input
+        #input4
+        type="text"
+        matInput
+        [formControl]="inputOption4"
+        [matAutocomplete]="auto4"
+        (keydown)="onKeydown($event, 4)"
+      />
+
+      <button
+        mat-icon-button
+        matSuffix
+        aria-label="Eingabe zurücksetzen"
+        type="button"
+        (click)="onReset(4); $event.stopPropagation()"
+      >
+        <mat-icon>clear</mat-icon>
+      </button>
+
+      <mat-autocomplete
+        #auto4="matAutocomplete"
+        (optionSelected)="onOptionSelected($event, 4)"
+        [displayWith]="displayFn"
+        [autoActiveFirstOption]="true"
+      >
+        <mat-option
+          *ngFor="let option of filteredOptions4 | async; trackBy: trackByCode"
+          [value]="option"
+        >
+          {{ option.code }} - {{ option.description }}
+        </mat-option>
+        <mat-option *ngIf="(filteredOptions4 | async)?.length === 0" disabled>
+          Keine Optionen verfügbar
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
     <!-- Hinzufügen-Button -->
     <button 
       mat-fab
@@ -165,22 +171,33 @@
       aria-label="Komponenten hinzufügen"
       (click)="addKomponente()"
       [disabled]="!canAddKomponente()"
+      type="button"
+      class="add-button"
     >
       <mat-icon>add</mat-icon>
     </button>
 
-    @if (komponenteGruppen().length > 0) {
-      <!-- Liste der hinzugefügten Komponentengruppen -->
+    <!-- Optional: Fehlermeldung anzeigen, wenn Eingaben fehlen -->
+    <ng-container *ngIf="!canAddKomponente()">
+      <div class="error-message">
+        Bitte wählen Sie alle vier Komponenten aus, bevor Sie hinzufügen.
+      </div>
+    </ng-container>
+
+    <!-- Liste der hinzugefügten Komponentengruppen -->
+    <ng-container *ngIf="komponenteGruppen.length > 0">
       <div class="komponenten-liste">
         <h3>Hinzugefügte Komponentengruppen</h3>
         <mat-list>
-          @for (gruppe of komponenteGruppen(); track gruppe) {
-            <mat-list-item>
+          <mat-list-item *ngFor="let gruppe of komponenteGruppen; trackBy: trackByIndex; let i = index">
             <p>{{ gruppe }}</p>
+            <button mat-icon-button color="warn" (click)="removeKomponente(i)">
+              <mat-icon>delete</mat-icon>
+            </button>
           </mat-list-item>
-          }          
         </mat-list>
       </div>
-    }
+    </ng-container>
+
   </mat-card-content>
 </mat-card>

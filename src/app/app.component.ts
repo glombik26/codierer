@@ -161,19 +161,19 @@ export class AppComponent {
     switch (inputNumber) {
       case 1:
         this.userSelectedOption1 = option;
-        this.inputOption1.setValue(option, { emitEvent: false });
+        this.inputOption1.setValue(option.code + ' - ' + option.description, { emitEvent: false });
         break;
       case 2:
         this.userSelectedOption2 = option;
-        this.inputOption2.setValue(option, { emitEvent: false });
+        this.inputOption2.setValue(option.code + ' - ' + option.description, { emitEvent: false });
         break;
       case 3:
         this.userSelectedOption3 = option;
-        this.inputOption3.setValue(option, { emitEvent: false });
+        this.inputOption3.setValue(option.code + ' - ' + option.description, { emitEvent: false });
         break;
       case 4:
         this.userSelectedOption4 = option;
-        this.inputOption4.setValue(option, { emitEvent: false });
+        this.inputOption4.setValue(option.code + ' - ' + option.description, { emitEvent: false });
         break;
       default:
         break;

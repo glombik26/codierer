@@ -64,11 +64,12 @@ export class AppComponent {
   filteredOptions3: Observable<Komponente[]>;
   filteredOptions4: Observable<Komponente[]>;
 
-  // ViewChild Deklarationen für die Eingabefelder
+  // ViewChild Deklarationen für die Eingabefelder und den Add-Button
   @ViewChild('input1') input1!: ElementRef<HTMLInputElement>;
   @ViewChild('input2') input2!: ElementRef<HTMLInputElement>;
   @ViewChild('input3') input3!: ElementRef<HTMLInputElement>;
   @ViewChild('input4') input4!: ElementRef<HTMLInputElement>;
+  @ViewChild('addButton') addButton!: ElementRef<HTMLButtonElement>;
 
   constructor() {
     // Initialisieren der gefilterten Optionen mit angepasster Typbehandlung
@@ -95,10 +96,10 @@ export class AppComponent {
 
   /**
    * Anzeige-Funktion für Autocomplete
-   * Zeigt die Beschreibung der ausgewählten Komponente an.
+   * Zeigt den Code und die Description der ausgewählten Komponente an.
    */
   displayFn(option: Komponente | null): string {
-    return option ? option.description : '';
+    return option ? `${option.code} - ${option.description}` : '';
   }
 
   /**
@@ -150,6 +151,13 @@ export class AppComponent {
   onOptionSelected(event: MatAutocompleteSelectedEvent, inputNumber: number): void {
     const selected = event.option.value as Komponente;
     this.setSelectedOption(selected, inputNumber);
+
+    // Wenn es das 4. Eingabefeld ist, setze den Fokus auf den Add-Button
+    if (inputNumber === 4) {
+      setTimeout(() => {
+        this.addButton.nativeElement.focus();
+      }, 100); // Kurz verzögern, um sicherzustellen, dass der Fokus gesetzt wird
+    }
   }
 
   /**
@@ -161,19 +169,19 @@ export class AppComponent {
     switch (inputNumber) {
       case 1:
         this.userSelectedOption1 = option;
-        this.inputOption1.setValue(option.code + ' - ' + option.description, { emitEvent: false });
+        this.inputOption1.setValue(option, { emitEvent: false });
         break;
       case 2:
         this.userSelectedOption2 = option;
-        this.inputOption2.setValue(option.code + ' - ' + option.description, { emitEvent: false });
+        this.inputOption2.setValue(option, { emitEvent: false });
         break;
       case 3:
         this.userSelectedOption3 = option;
-        this.inputOption3.setValue(option.code + ' - ' + option.description, { emitEvent: false });
+        this.inputOption3.setValue(option, { emitEvent: false });
         break;
       case 4:
         this.userSelectedOption4 = option;
-        this.inputOption4.setValue(option.code + ' - ' + option.description, { emitEvent: false });
+        this.inputOption4.setValue(option, { emitEvent: false });
         break;
       default:
         break;
@@ -221,6 +229,8 @@ export class AppComponent {
       // Hinzufügen der Gruppe zur Liste
       const gruppenCode = `${this.userSelectedOption1.code}.${this.userSelectedOption2.code}.${this.userSelectedOption3.code}.${this.userSelectedOption4.code}`;
       this.komponenteGruppen.push(gruppenCode);
+
+      console.log('Füge Komponentengruppe hinzu:', gruppenCode);
 
       // Eingabefelder zurücksetzen
       this.onReset(1);
@@ -289,32 +299,39 @@ export class AppComponent {
         const firstOption = filteredOptions[0];
         this.setSelectedOption(firstOption, inputNumber);
 
-        // Fokus auf das nächste Eingabefeld setzen nach kurzer Verzögerung
-        const nextInputNumber = inputNumber + 1;
-        if (nextInputNumber <= 4) {
-          setTimeout(() => { // Asynchroner Fokuswechsel
-            let nextInput: ElementRef<HTMLInputElement> | undefined;
+        // Wenn es das 4. Eingabefeld ist, setze den Fokus auf den Add-Button
+        if (inputNumber === 4) {
+          setTimeout(() => {
+            this.addButton.nativeElement.focus();
+          }, 100); // Kurz verzögern, um sicherzustellen, dass der Fokus gesetzt wird
+        } else {
+          // Fokus auf das nächste Eingabefeld setzen nach kurzer Verzögerung
+          const nextInputNumber = inputNumber + 1;
+          if (nextInputNumber <= 4) {
+            setTimeout(() => { // Asynchroner Fokuswechsel
+              let nextInput: ElementRef<HTMLInputElement> | undefined;
 
-            switch (nextInputNumber) {
-              case 2:
-                nextInput = this.input2;
-                break;
-              case 3:
-                nextInput = this.input3;
-                break;
-              case 4:
-                nextInput = this.input4;
-                break;
-              default:
-                nextInput = undefined;
-            }
+              switch (nextInputNumber) {
+                case 2:
+                  nextInput = this.input2;
+                  break;
+                case 3:
+                  nextInput = this.input3;
+                  break;
+                case 4:
+                  nextInput = this.input4;
+                  break;
+                default:
+                  nextInput = undefined;
+              }
 
-            if (nextInput) {
-              nextInput.nativeElement.focus();
-            } else {
-              console.warn(`Eingabefeld ${nextInputNumber} existiert nicht oder ist noch nicht gerendert.`);
-            }
-          }, 100); // Verzögerung von 100ms
+              if (nextInput) {
+                nextInput.nativeElement.focus();
+              } else {
+                console.warn(`Eingabefeld ${nextInputNumber} existiert nicht oder ist noch nicht gerendert.`);
+              }
+            }, 100); // Verzögerung von 100ms
+          }
         }
       }
     }
